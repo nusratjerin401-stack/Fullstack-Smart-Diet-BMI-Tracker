@@ -10,17 +10,16 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({adapter});
 
 const userIds = Array.from({ length: 10}, () => faker.string.uuid());
-//const mealIds = Array.from({ length: 10}, () => faker.string.uuid());
-//const timestamps = Array.from({ length: 10}, () => faker.date.between({from: '1965-01-01', to: Date.now()}));
-const protein = Array.from({ length: 10}, () => faker.number.float({min:0, max:100}));
-const carbs = Array.from({ length: 10}, () => faker.number.float({min:0, max:100}));
-const sugar = Array.from({ length: 10}, () => faker.number.float({min:0, max:100}));
-const fat = Array.from({ length: 10}, () => faker.number.float({min:0, max:100}));
-const energyKCal = Array.from({ length: 10}, () => faker.number.float({min:0, max:100}));
+
 const portion = () => {
   const size = ['small','medium','large'];
   const rand = Math.floor(Math.random()*3);
   return size[rand];
+}
+const activity = () => {
+  const levels = ['0','10','15', '20'];
+  const rand = Math.floor(Math.random()*4);
+  return levels[rand];
 }
 
 async function main() {
@@ -43,6 +42,16 @@ async function main() {
           firstName: faker.person.firstName(),
           lastName: faker.person.lastName(),
         }
+    })
+    const userInfo = await prisma.userInfo.create({
+      data: {
+        uuid: userId,
+        age: faker.number.int({min:15, max:60}),
+        height: faker.number.float({min:55.2, max: 92.2}),
+        weight: faker.number.float({min:100, max:320}),
+        activityFrequency: 
+
+      }
     })
     
     for (let i = 0; i < 10; i++){
