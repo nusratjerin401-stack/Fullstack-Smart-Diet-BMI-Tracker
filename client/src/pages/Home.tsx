@@ -73,7 +73,7 @@ const Home: React.FC = () => {
             <IonButton expand="block" color="success" onClick={() => history.push('/day-meals')}>
               My Day Meals
             </IonButton>
-
+	    </div>
           </IonCardContent>
         </IonCard>
       </IonContent>

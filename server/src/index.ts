@@ -3,10 +3,14 @@ import router from "./routes/meals.js";
 import type { Request, Response } from "express";
 import cors from "cors";
 
+<<<<<<< HEAD
 //const express = await import("express") as any;
 //import express = require('express');
 // @ts-ignore
 const app = express(); 
+=======
+const app = express();
+>>>>>>> main
 const json = express.json;
 
 app.use(cors({

@@ -13,6 +13,48 @@ NutriBloom is a full-stack diet planning application that creates personalized m
 
 
 
+## Quickstart
+
+1. install dependencies
+```
+cd server
+yarn
+
+cd ../client
+yarn
+
+cd ../
+yarn
+```
+
+2. create .env
+```
+cp .env.example .env
+# edit .env with your database credentials
+```
+
+3. update database
+```
+yarn prisma migrate dev
+```
+
+4. generate prisma client
+```
+yarn prisma generate
+```
+
+5. start server
+```
+cd server
+yarn dev
+```
+
+6. start client
+```
+cd client
+yarn dev
+```
+
 
 
 # RAMANPREET WORK
