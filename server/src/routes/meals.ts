@@ -3,10 +3,12 @@
 
 import dotenv from "dotenv";
 dotenv.config({ path: "../.env" });
-
 import express from "express";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../../generated/prisma/client.js";
+import cors from "cors";
+
+
 
 const router = express.Router();
 
@@ -17,7 +19,7 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 // GET all meals
-router.get("/meals", async (req, res) => {
+router.get("/meal", async (req, res) => {
   try {
     const meals = await prisma.meal.findMany({
       include: {
@@ -38,39 +40,31 @@ router.get("/meals", async (req, res) => {
 
 
 
-
+const t = 1;
 // POST a meal
-router.post("/meals", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const { mealType, date, totalCalories, items } = req.body;
-
+    const { mealType, date, totalCalories, items } = req.body.breakfast[0];
+    //console.log(req.body);
     const meal = await prisma.meal.create({
       data: {
-        mealType,
-        date: new Date(date),
-        totalCalories: totalCalories ?? 0,
+        timestamp: new Date(date),
+        
 
-        items: {
-          create: items?.map((item: any) => ({
-            foodName: item.foodName,
-            quantity: item.quantity,
-            calories: item.calories,
-            protein: item.protein,
-            carbs: item.carbs,
-            fat: item.fat,
-          })) ?? [],
-        },
       },
       include: {
         items: true,
       },
     });
-
+    console.log(date);
     res.status(201).json(meal);
   } catch (error) {
     console.error(error);
+    console.log(req.body.breakfast[0]);
+    console.log(req.body.breakfast[0].date);
+    console.log(req.body.breakfast[0].items);
     res.status(500).json({
-      error: "Failed to create meal",
+      error: `Failed to create meal`
     });
   }
 });

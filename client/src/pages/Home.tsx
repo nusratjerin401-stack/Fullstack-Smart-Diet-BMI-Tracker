@@ -65,7 +65,7 @@ const Home: React.FC = () => {
                   <h3>140g</h3>
                   <p>Carbs</p>
                 </div>
-
+            </div>
             <IonButton expand="block" color="success" onClick={() => history.push('/intake')}>
               Start Assessment
             </IonButton>

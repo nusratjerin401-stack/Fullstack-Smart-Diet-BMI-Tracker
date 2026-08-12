@@ -96,7 +96,7 @@ const AddMeal = () => {
         body: JSON.stringify(meals),
         credentials: "include",
       });
-  
+      
       const data = await response.json();
 
       console.log('Saved',data);
@@ -106,6 +106,8 @@ const AddMeal = () => {
 
     } catch (error){
       console.log(error);
+      console.log(meals.breakfast[0]);
+      console.log(meals);
     }
   };
 
