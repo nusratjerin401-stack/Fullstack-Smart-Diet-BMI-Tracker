@@ -21,6 +21,7 @@ import {
   IonList
 } from '@ionic/react';
 
+
 type Food = {
     foodName: string;
     date: string;
@@ -88,21 +89,17 @@ const AddMeal = () => {
     try
     {
       const response = await fetch(
-      'http://localhost:3000/meal',{
+      'http://localhost:5173/meals',{
         method: 'POST',
         headers: {
           'Content-type': 'application/json'
         },
-        body: JSON.stringify(meals),
-        credentials: "include",
+        body: JSON.stringify(meals)
       });
   
       const data = await response.json();
 
       console.log('Saved',data);
-      console.log(meals);
-      console.log(meals.breakfast[0].date);
-   
 
     } catch (error){
       console.log(error);

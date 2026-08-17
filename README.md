@@ -118,3 +118,44 @@ yarn dev
   * Drafted technical documentation, pull request summaries, and conceptual overviews for database synchronization and seeding workflows.
   * Assisted in structuring synthetic data generation patterns using `@faker-js/faker` within Prisma transaction methods.
 * **Human Oversight & Verification:** All database schema changes, client paths, dependency installations, and seed scripts were reviewed, customized, executed, and validated directly in the local repository environment on branch `ramanpreet`.
+
+## BMI, Activity Level, and Daily Recommended Values
+
+### 1. BMI Calculation
+BMI is calculated from the user's height and weight.
+
+Formula:
+BMI = (weight in pounds × 703) / height in inches²
+
+BMI categories:
+- Below 18.5 → Underweight
+- 18.5–24.9 → Healthy Weight
+- 25–29.9 → Overweight
+- 30 or higher → Obesity
+
+### 2. Activity Level
+The user's activity type and frequency will be mapped to an activity category.
+
+- None/Infrequent → Sedentary
+- 1–2 times/week → Lightly Active
+- 3–5 times/week → Moderately Active
+- 6+ times/week → Very Active
+
+The activity category will be used to determine the user's daily calorie needs.
+
+### 3. Daily Recommended Values (DRV)
+Daily Recommended Values are nutrition targets used to compare a user's daily nutrient intake with recommended amounts.
+
+Examples include:
+- Calories
+- Protein
+- Carbohydrates
+- Fat
+- Cholesterol
+
+Some nutrients have recommended minimum amounts, while others have recommended maximum limits. Recommended values may vary based on factors such as age and sex.
+
+### 4. Application Flow
+User enters information → BMI is calculated → Activity level is determined → Daily Recommended Values are determined → Results can be displayed on the dashboard.
+
+
