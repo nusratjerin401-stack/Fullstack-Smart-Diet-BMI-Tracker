@@ -1,13 +1,13 @@
 // @ts-nocheck
 // JC approved nocheck 2026-08-11
 import dotenv from "dotenv";
-
 dotenv.config({ path: "../.env" });
-
 import express from "express";
 import bcrypt from "bcryptjs";
+
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../../generated/prisma/client.js";
+
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 
-// CREATE USER
+// CREATE USER, /SignUp
 router.post("/", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -28,8 +28,8 @@ router.post("/", async (req, res) => {
         message: "Name, email, and password are required",
       });
     }
-
-    const existingUser = await prisma.user.findUnique({
+    
+    const existingUser = await prisma.User.findUnique({
       where: {
         email,
       },
@@ -40,7 +40,7 @@ router.post("/", async (req, res) => {
         message: "Email already exists",
       });
     }
-
+    
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
@@ -61,14 +61,14 @@ router.post("/", async (req, res) => {
   } catch (error) {
     console.error(error);
     console.log(req.body);
-   res.status(500).json({
-  message: "Failed to create user",
+    res.status(500).json({
+      message: "Failed to create user",
     });
   }
 });
 
 
-// GET ALL USERS
+// GET ALL USERS, /users
 router.get("/", async (req, res) => {
   try {
     const users = await prisma.user.findMany({
@@ -91,10 +91,10 @@ router.get("/", async (req, res) => {
 });
 
 
-// GET ONE USER
+// GET ONE USER, /users/:id
 router.get("/users/:id", async (req, res) => {
   try {
-    const { uuid } = req.params;
+    const { id } = req.params;
 
     const user = await prisma.user.findUnique({
       where: {
@@ -113,7 +113,7 @@ router.get("/users/:id", async (req, res) => {
       });
     }
 
-   console.log('puta');
+    console.log('puta');
     res.json(user);
   } catch (error) {
     console.error(error);
@@ -180,7 +180,7 @@ router.put("/", async (req, res) => {
 });
 
 
-// DELETE USER
+// DELETE USER, /users/:id
 router.delete("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -199,7 +199,7 @@ router.delete("/users/:id", async (req, res) => {
 
     await prisma.user.delete({
       where: {
-        uuid,
+        id,
       },
     });
 
@@ -209,7 +209,7 @@ router.delete("/users/:id", async (req, res) => {
 
   } catch (error) {
     console.error(error);
-   console.log(req.params);
+    console.log(req.params);
     res.status(500).json({
       message: "Failed to delete user",
     });

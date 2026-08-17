@@ -2,21 +2,54 @@ import React from 'react';
 import { MacroPieChart } from '../components/charts/MacroPieChart';
 import { BMITrendChart } from '../components/charts/BMITrendChart';
 import { CalorieBarChart } from '../components/charts/CalorieBarChart';
+import { LineChart, BarChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { RechartsDevtools } from '@recharts/devtools';
+import { IonPage, IonTitle } from '@ionic/react';
+
+
+type ChartData = {
+  name: string;
+  value: number;
+};
+
+const data: ChartData[] = [
+  { name: 'Page A', value: 400 },
+  { name: 'Page B', value: 300 },
+  { name: 'Page C', value: 200 },
+  { name: 'Page D', value: 278 },
+  { name: 'Page E', value: 189 },
+  { name: 'Page E', value: 189 },
+  { name: 'Page E', value: 189 },
+  { name: 'Page E', value: 189 },
+  { name: 'Page E', value: 189 },
+  { name: 'Page E', value: 189 },
+  { name: 'Page E', value: 189 },
+];
 
 const Dashboard: React.FC = () => {
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">Diet & BMI Analytics</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <MacroPieChart />
-          <CalorieBarChart />
-          <div className="md:col-span-2 lg:col-span-3">
-            <BMITrendChart />
-          </div>
-        </div>
+    <IonPage>
+   
+      <div >
+        <IonTitle> Nutrients over Time </IonTitle>
+        <ResponsiveContainer>
+         <LineChart
+         //data = {data}
+         //margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+         >
+         
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" stroke="var(--color-text-3)" />
+            <YAxis width={50} stroke="var(--color-text-3)" />
+            
+        <Tooltip />
+        <Legend />
+        </LineChart>
+        </ResponsiveContainer>
+      
       </div>
-    </main>
+   
+    </IonPage>
   );
 };
 

@@ -69,6 +69,7 @@ model MealItem {
   protein  Float
   carbs    Float
   fat      Float
+  date     DateTime @default(now())
 
   meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
 
