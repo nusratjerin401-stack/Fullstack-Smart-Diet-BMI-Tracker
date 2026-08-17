@@ -1,11 +1,9 @@
 // @ts-nocheck
 // JC approved nocheck 2026-08-11
 import dotenv from "dotenv";
-
 dotenv.config({ path: "../.env" });
-
-
 import express from "express";
+import passport from "passport";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../../generated/prisma/client.js";
 
@@ -19,208 +17,203 @@ const prisma = new PrismaClient({ adapter });
 
 
 // CREATE INTAKE
-router.post("/intake", async (req, res) => {
-  try {
-    const {
-      uuid,
-      age,
-      height,
-      weight,
-      sex,
-      bmi,
-      activityFrequency,
-      activityType,
-      fitnessGoal,
-    } = req.body;
+router.post("/survey",passport.authenticate("jwt", { session: false }),async (req, res) => {
+    try {
+      const user = req.user;
 
-    if (!uuid) {
-      return res.status(400).json({
-        error: "uuid is required",
-      });
-    }
+      if (!user) {
+        return res.status(401).json({
+          error: "Unauthorized",
+        });
+      }
 
-    const user = await prisma.user.findUnique({
-      where: {
-        uuid,
-      },
-    });
-
-    if (!user) {
-      return res.status(404).json({
-        error: "User not found",
-      });
-    }
-
-    const existingInfo = await prisma.userInfo.findUnique({
-      where: {
-        uuid,
-      },
-    });
-
-    if (existingInfo) {
-      return res.status(409).json({
-        error: "Intake information already exists for this user",
-      });
-    }
-
-    const intake = await prisma.userInfo.create({
-      data: {
-        uuid,
-        age: Number(age),
-        height: Number(height),
-        weight: Number(weight),
+      const {
+        age,
         sex,
-        bmi: Number(bmi),
-        activityFrequency,
+        heightFeet,
+        heightInches,
+        weight,
         activityType,
+        activityFrequency,
         fitnessGoal,
-      },
-    });
+      } = req.body;
 
-    res.status(201).json(intake);
-  } catch (error) {
-    console.error(error);
+      const existingInfo = await prisma.userInfo.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
 
-    res.status(500).json({
-      error: "Failed to create intake",
-    });
-  }
-});
+      if (existingInfo) {
+        return res.status(409).json({
+          error: "Intake information already exists for this user",
+        });
+      }
 
+      const intake = await prisma.userInfo.create({
+        data: {
+          userId: user.id,
+          age: Number(age),
+          sex,
+          heightFeet: Number(heightFeet),
+          heightInches: Number(heightInches),
+          weight: Number(weight),
+          activityType,
+          activityFrequency,
+          fitnessGoal,
+        },
+      });
 
-// GET ALL INTAKE
-router.get("/intake", async (req, res) => {
-  try {
-    const intake = await prisma.userInfo.findMany();
+      res.status(201).json(intake);
+    } catch (error) {
+      console.error(error);
 
-    res.json(intake);
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: "Failed to get intake information",
-    });
-  }
-});
-
-
-// GET ONE USER'S INTAKE
-router.get("/intake/:uuid", async (req, res) => {
-  try {
-    const { uuid } = req.params;
-
-    const intake = await prisma.userInfo.findUnique({
-      where: {
-        uuid,
-      },
-    });
-
-    if (!intake) {
-      return res.status(404).json({
-        error: "Intake information not found",
+      res.status(500).json({
+        error: "Failed to create intake",
       });
     }
-
-    res.json(intake);
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: "Failed to get intake information",
-    });
   }
-});
+);
 
 
-// UPDATE INTAKE
-router.put("/intake/:uuid", async (req, res) => {
-  try {
-    const { uuid } = req.params;
+// GET CURRENT USER'S INTAKE
+router.get("/survey",passport.authenticate("jwt", { session: false }),async (req, res) => {
+    try {
+      const user = req.user;
 
-    const {
-      age,
-      height,
-      weight,
-      sex,
-      bmi,
-      activityFrequency,
-      activityType,
-      fitnessGoal,
-    } = req.body;
+      if (!user) {
+        return res.status(401).json({
+          error: "Unauthorized",
+        });
+      }
 
-    const existingInfo = await prisma.userInfo.findUnique({
-      where: {
-        uuid,
-      },
-    });
+      const intake = await prisma.userInfo.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
 
-    if (!existingInfo) {
-      return res.status(404).json({
-        error: "Intake information not found",
+      if (!intake) {
+        return res.status(404).json({
+          error: "Intake information not found",
+        });
+      }
+
+      res.status(200).json(intake);
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Failed to get intake information",
       });
     }
+  }
+);
 
-    const intake = await prisma.userInfo.update({
-      where: {
-        uuid,
-      },
-      data: {
-        age: Number(age),
-        height: Number(height),
-        weight: Number(weight),
+
+// UPDATE CURRENT USER'S INTAKE
+router.put("/survey",passport.authenticate("jwt", { session: false }),async (req, res) => {
+    try {
+      const user = req.user;
+
+      if (!user) {
+        return res.status(401).json({
+          error: "Unauthorized",
+        });
+      }
+
+      const {
+        age,
         sex,
-        bmi: Number(bmi),
-        activityFrequency,
+        heightFeet,
+        heightInches,
+        weight,
         activityType,
+        activityFrequency,
         fitnessGoal,
-      },
-    });
+      } = req.body;
 
-    res.json(intake);
-  } catch (error) {
-    console.error(error);
+      const existingInfo = await prisma.userInfo.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
 
-    res.status(500).json({
-      error: "Failed to update intake information",
-    });
-  }
-});
+      if (!existingInfo) {
+        return res.status(404).json({
+          error: "Intake information not found",
+        });
+      }
 
+      const intake = await prisma.userInfo.update({
+        where: {
+          userId: user.id,
+        },
+        data: {
+          age: Number(age),
+          sex,
+          heightFeet: Number(heightFeet),
+          heightInches: Number(heightInches),
+          weight: Number(weight),
+          activityType,
+          activityFrequency,
+          fitnessGoal,
+        },
+      });
 
-// DELETE INTAKE
-router.delete("/intake/:uuid", async (req, res) => {
-  try {
-    const { uuid } = req.params;
+      res.status(200).json(intake);
+    } catch (error) {
+      console.error(error);
 
-    const existingInfo = await prisma.userInfo.findUnique({
-      where: {
-        uuid,
-      },
-    });
-
-    if (!existingInfo) {
-      return res.status(404).json({
-        error: "Intake information not found",
+      res.status(500).json({
+        error: "Failed to update intake information",
       });
     }
-
-    await prisma.userInfo.delete({
-      where: {
-        uuid,
-      },
-    });
-
-    res.json({
-      message: "Intake information deleted successfully",
-    });
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: "Failed to delete intake information",
-    });
   }
-});
+);
+
+
+// DELETE CURRENT USER'S INTAKE
+router.delete("/survey",passport.authenticate("jwt", { session: false }),async (req, res) => {
+    try {
+      const user = req.user;
+
+      if (!user) {
+        return res.status(401).json({
+          error: "Unauthorized",
+        });
+      }
+
+      const existingInfo = await prisma.userInfo.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
+
+      if (!existingInfo) {
+        return res.status(404).json({
+          error: "Intake information not found",
+        });
+      }
+
+      await prisma.userInfo.delete({
+        where: {
+          userId: user.id,
+        },
+      });
+
+      res.status(200).json({
+        message: "Intake information deleted successfully",
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Failed to delete intake information",
+      });
+    }
+  }
+);
 
 
 export default router;

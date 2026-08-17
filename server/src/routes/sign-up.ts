@@ -19,7 +19,7 @@ const prisma = new PrismaClient({ adapter });
 
 
 // CREATE USER
-router.post("/signup", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -60,20 +60,20 @@ router.post("/signup", async (req, res) => {
 
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Failed to create user",
+    console.log(req.body);
+   res.status(500).json({
+  message: "Failed to create user",
     });
   }
 });
 
 
 // GET ALL USERS
-router.get("/users", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const users = await prisma.user.findMany({
       select: {
-        uuid: true,
+        id: true,
         name: true,
         email: true,
       },
@@ -92,16 +92,16 @@ router.get("/users", async (req, res) => {
 
 
 // GET ONE USER
-router.get("/users/:uuid", async (req, res) => {
+router.get("/users/:id", async (req, res) => {
   try {
     const { uuid } = req.params;
 
     const user = await prisma.user.findUnique({
       where: {
-        uuid,
+        id,
       },
       select: {
-        uuid: true,
+        id: true,
         name: true,
         email: true,
       },
@@ -113,11 +113,11 @@ router.get("/users/:uuid", async (req, res) => {
       });
     }
 
+   console.log('puta');
     res.json(user);
-
   } catch (error) {
     console.error(error);
-
+    console.error(req.params);
     res.status(500).json({
       message: "Failed to get user",
     });
@@ -125,8 +125,8 @@ router.get("/users/:uuid", async (req, res) => {
 });
 
 
-// UPDATE USER
-router.put("/users/:uuid", async (req, res) => {
+// UPDATE USER, /users/:id
+router.put("/", async (req, res) => {
   try {
     const { uuid } = req.params;
     const { name, email, password } = req.body;
@@ -181,13 +181,13 @@ router.put("/users/:uuid", async (req, res) => {
 
 
 // DELETE USER
-router.delete("/users/:uuid", async (req, res) => {
+router.delete("/users/:id", async (req, res) => {
   try {
-    const { uuid } = req.params;
+    const { id } = req.params;
 
     const existingUser = await prisma.user.findUnique({
       where: {
-        uuid,
+        id,
       },
     });
 
@@ -209,7 +209,7 @@ router.delete("/users/:uuid", async (req, res) => {
 
   } catch (error) {
     console.error(error);
-
+   console.log(req.params);
     res.status(500).json({
       message: "Failed to delete user",
     });
