@@ -5,7 +5,7 @@ import { faker } from '@faker-js/faker';
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 
-const connectionString = ${process.env.DATABASE_URL};
+const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
@@ -18,7 +18,7 @@ const goals = ['WeightLoss', 'WeightGain', 'Maintenance', 'MuscleGain'] as const
 async function main() {
   console.log('Seeding dummy data...');
 
-  const USER_COUNT = 5;
+  const USER_COUNT = 10;
   const passwordHash = await bcrypt.hash('password123', 10);
 
   for (let i = 0; i < USER_COUNT; i++) {
@@ -32,7 +32,7 @@ async function main() {
           length: faker.number.int({ min: 1, max: 3 }),
         }).map(() => ({
           foodName: faker.commerce.productName(),
-          portion: ${faker.number.int({ min: 1, max: 3 })} serving(s),
+          portion: `${faker.number.int({ min: 1, max: 3 })} serving(s)`,
           calories: faker.number.int({ min: 100, max: 800 }),
           protein: faker.number.int({ min: 5, max: 45 }),
           carbs: faker.number.int({ min: 5, max: 80 }),
