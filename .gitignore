@@ -5,3 +5,8 @@ node_modules
 /generated/prisma
 
 /generated/prisma
+
+server/.yarn/cache
+
+client/.yarn/install-state.gz
+server/.yarn/install-state.gz

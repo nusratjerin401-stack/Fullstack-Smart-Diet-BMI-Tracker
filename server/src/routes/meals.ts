@@ -94,10 +94,26 @@ mealRouter.get("/meal", passport.authenticate("jwt", { session: false }), async 
 // POST a meal
 mealRouter.post("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
  
+  //console.log(req.body);
+  for (const m of req.body){
+  
 
-  console.log(req.body.breakfast[0]);
+
   try {
-    const { foodName, date, quantity, calories, protein, carbs, fat} = req.body.breakfast[0];
+    const { foodName, date, quantity, calories, protein, carbs, fat, mealType} = req.body[m];
+
+    const existingRecord = await prisma.mealItem.findUnique({
+    where: {
+      foodName: foodName,
+      date: date,
+      quantity: quantity,
+      calories: calories,
+      protein: protein,
+      carbs: carbs,
+      fat: fat,
+      mealType: mealType
+    }
+    });
 
      const user = req.user;
      if (!user.id) {
@@ -113,10 +129,10 @@ mealRouter.post("/meal", passport.authenticate("jwt", { session: false }), async
     }
 
 
-
+    if (!existingRecord){
     const meal = await prisma.meal.create({
       data: {
-        mealType: "BREAKFAST",
+        mealType: mealType.toUpperCase(),
         userId: user.id,
         date: new Date(date),
         items: {
@@ -133,7 +149,7 @@ mealRouter.post("/meal", passport.authenticate("jwt", { session: false }), async
       include: {
         items: true,
       },
-    });
+    })};
 
     res.status(201).json(meal);
   } catch (error) {
@@ -142,6 +158,8 @@ mealRouter.post("/meal", passport.authenticate("jwt", { session: false }), async
       error: "Failed to create meal",
     });
   }
+  };
+  
 });
 
 /* GET one meal
@@ -150,7 +168,7 @@ mealRouter.post("/meal", passport.authenticate("jwt", { session: false }), async
     const id = Number(req.params.id);
 
 // GET one meal for logged-in user
-router.get("/meal/:id", passport.authenticate("jwt", { session: false }), async (req, res) => {
+router.get("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
     try {
       const id = Number(req.params.id);
       const user = req.user;
@@ -177,16 +195,12 @@ router.get("/meal/:id", passport.authenticate("jwt", { session: false }), async 
         });
       }
 
-      res.status(200).json(meal);
-    } catch (error) {
-      console.error(error);
+    res.status(500).json({
+      error: "Failed to get meal",
+    });
+  }*/
 
-      res.status(500).json({
-        error: "Failed to get meal",
-      });
-    }
-  }
-);
+
 
 // UPDATE a meal
 mealRouter.put("/meals/:id", async (req, res) => {
@@ -298,5 +312,5 @@ router.delete("/meal/:id",passport.authenticate("jwt", { session: false }),async
     }
   }
 });
-*/
+
 export default mealRouter;
