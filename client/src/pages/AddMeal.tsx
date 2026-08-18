@@ -96,7 +96,7 @@ const AddMeal = () => {
             ...food,
             mealType
           })))
-
+      
       const response = await fetch(
       'http://localhost:3000/meal',{
         method: 'POST',
@@ -104,7 +104,7 @@ const AddMeal = () => {
           'Content-type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(meals),
+        body: JSON.stringify(mealsPayload),
         credentials: "include",
       });
   
