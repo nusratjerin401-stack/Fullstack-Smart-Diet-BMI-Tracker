@@ -22,6 +22,7 @@ import {
 } from '@ionic/react';
 import useAuthStore from '../store/useAuthStore';
 
+
 type Food = {
     foodName: string;
     date: string;
@@ -98,7 +99,7 @@ const AddMeal = () => {
           })))
       
       const response = await fetch(
-      'http://localhost:3000/meal',{
+      'http://localhost:3000/meals',{
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
@@ -111,9 +112,6 @@ const AddMeal = () => {
       const data = await response.json();
 
       console.log('Saved',data);
-      console.log(meals);
-      console.log(meals.breakfast[0].date);
-      console.log(mealsPayload);
 
     } catch (error){
       console.log(error);
