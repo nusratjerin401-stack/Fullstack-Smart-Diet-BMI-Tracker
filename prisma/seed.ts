@@ -1,67 +1,133 @@
 // prisma/seed.ts
+
+
 import { PrismaClient} from "../generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { faker } from "@faker-js/faker";
 import { Pool } from "pg";
 
 const connectionString = `${process.env.DATABASE_URL}`;
+console.log(connectionString);
 const pool = new Pool({connectionString});
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({adapter});
 
 const userIds = Array.from({ length: 10}, () => faker.string.uuid());
-//const mealIds = Array.from({ length: 10}, () => faker.string.uuid());
-//const timestamps = Array.from({ length: 10}, () => faker.date.between({from: '1965-01-01', to: Date.now()}));
-const protein = Array.from({ length: 10}, () => faker.number.float({min:0, max:100}));
-const carbs = Array.from({ length: 10}, () => faker.number.float({min:0, max:100}));
-const sugar = Array.from({ length: 10}, () => faker.number.float({min:0, max:100}));
-const fat = Array.from({ length: 10}, () => faker.number.float({min:0, max:100}));
-const energyKCal = Array.from({ length: 10}, () => faker.number.float({min:0, max:100}));
+
 const portion = () => {
   const size = ['small','medium','large'];
   const rand = Math.floor(Math.random()*3);
   return size[rand];
 }
 
-async function main() {
-  //first test insert 
-  const alice = await prisma.user.upsert({
-    where: { username: "gg"},
-    update: {},
-    create: {
-      username: "gg",
-      firstName: "alice",
-      lastName: "bob"
-    }
-  })
+const goal = () => {
+  const goal = ['weight loss','weight maintenance','muscle gain'];
+  const rand = Math.floor(Math.random()*3);
+  return goal[rand];
+}
+const activity = () => {
+  const levels = ['None','Occasionally','Often', 'Frequently'];
+  const rand = Math.floor(Math.random()*4);
+  return levels[rand];
+}
+const type = () => {
+  const types = ['Cardio','Strength','None'];
+  const rand = Math.floor(Math.random()*3);
+  return types[rand];
+}
 
+const foodName = () => {
+  const foods = [
+    'Apple',
+    'Banana',
+    'Orange',
+    'Blueberries',
+    'Strawberries',
+    'Grapes',
+    'Watermelon',
+    'Mango',
+    'Pineapple',
+    'Avocado',
+    'Spinach',
+    'Kale',
+    'Lettuce',
+    'Tomatoes',
+    'Cucumbers',
+    'Carrots',
+    'Broccoli',
+    'Bell peppers',
+    'Onions',
+    'Garlic',
+    'Sweet potato',
+    'White rice',
+    'Brown rice',
+    'Quinoa',
+    'Oats',
+    'Whole wheat bread',
+    'Greek yogurt',
+    'Milk',
+    'Cheddar cheese',
+    'Eggs',
+    'Chicken breast',
+    'Turkey',
+    'Salmon',
+    'Tuna',
+    'Shrimp',
+    'Tofu',
+    'Black beans',
+    'Chickpeas',
+    'Lentils',
+    'Olive oil'
+  ];
+  const rand = Math.floor(Math.random() * 40);
+  return foods[rand];
+}
+
+async function main() {
+  
   for (const userId of userIds) {
     const user = await prisma.user.create({
         data: {
-          uuid: userId,
-          username: 'jacoblover' + faker.string.alpha(2),
-          firstName: faker.person.firstName(),
-          lastName: faker.person.lastName(),
+          id: userId,
+          name: 'jacoblover' + faker.string.alpha(4),
+          email: faker.internet.email(),
+          password: faker.string.alphanumeric(12)
         }
+    })
+    const userInfo = await prisma.userInfo.create({
+      data: {
+        userId: userId,
+        sex: 'male',
+        age: faker.number.int({min:15, max:60}),
+        heightFeet: faker.number.int({min:3, max: 7}),
+        heightInches: faker.number.int({min:0, max: 11}),
+        weight: faker.number.float({min:100, max:320}),
+        activityFrequency: activity(),
+        activityType: type(),
+        fitnessGoal: goal()
+      }
     })
     
     for (let i = 0; i < 10; i++){
+      const mealId = faker.string.uuid();
       const meal = await prisma.meal.create({
       data: {
-        mealId: faker.string.uuid(),
-        uuid: user.uuid,
-        timestamp: faker.date.between({from: '1965-01-01', to: Date.now()})
+        id: mealId,
+        userId: userId,
+        date: faker.date.between({from: '1965-01-01', to: Date.now()}),
+        mealType: 'BREAKFAST'
       }
     })
       for (let i = 0; i < 10; i++){
          const mealItem = await prisma.mealItem.create({
          data: {
-           mealId: meal.mealId,
+           id: faker.string.uuid(),
+           mealId: mealId,
+           foodName: foodName(),
            protein: faker.number.float({min:0, max:100}),
            carbs: faker.number.float({min:0, max:100}),
-           sugar: faker.number.float({min:0, max:100}),
            fat: faker.number.float({min:0, max:100}),
-           energyKcal: faker.number.float({min:0, max:1000}),
+           calories: faker.number.float({min:20, max:5000}),
            portion: portion()
       }
     })

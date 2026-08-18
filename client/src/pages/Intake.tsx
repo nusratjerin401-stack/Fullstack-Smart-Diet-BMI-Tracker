@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar,IonList,IonItem, IonInput, IonRadioGroup, IonRadio, IonLabel, IonSelect, IonSelectOption, IonItemGroup, IonItemDivider, IonButton} from '@ionic/react';
 import './Intake.css';
+import useAuthStore from '../store/useAuthStore';
+
 
 const Intake = () => {
+  const token = useAuthStore((state) => state.token);
   const [FormData, setFormData] = useState({
     age: 0,
     sex: '',
@@ -22,7 +25,8 @@ const Intake = () => {
       'http://localhost:3000/survey',{
         method: 'POST',
         headers: {
-          'Content-type': 'application/json'
+          'Content-type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(FormData)
       });
@@ -33,6 +37,9 @@ const Intake = () => {
 
     } catch (error){
       console.log(error);
+      console.log(token);
+      console.log(FormData);
+      
     }
   }
   
@@ -201,13 +208,13 @@ const Intake = () => {
                 }
                 >
                   <IonLabel className="section-header">Activity Frequency:</IonLabel>
-                  <IonRadio value="None">None or Infrequent</IonRadio>
+                  <IonRadio value="20">None or Infrequent</IonRadio>
                   <br />
-                  <IonRadio value="10">Occassionally (1-2 a Week)</IonRadio>
+                  <IonRadio value="15">Occassionally (1-2 a Week)</IonRadio>
                   <br />
-                  <IonRadio value="15">Often (3-5 a week)</IonRadio>
+                  <IonRadio value="10">Often (3-5 a week)</IonRadio>
                   <br />
-                  <IonRadio value="20">Frequently (6+ a week)</IonRadio>
+                  <IonRadio value="5">Frequently (6+ a week)</IonRadio>
                 </IonRadioGroup>
               </IonItem>
 
@@ -223,7 +230,6 @@ const Intake = () => {
                   }
                   >
                     <IonSelectOption value="WeightLoss">Weight Loss</IonSelectOption>
-                    <IonSelectOption value="WeightGain">Weight Gain</IonSelectOption>
                     <IonSelectOption value="Maintenance">Maintenance</IonSelectOption>
                     <IonSelectOption value="MuscleGain">Muscle Gain</IonSelectOption>
                   </IonSelect>

@@ -1,14 +1,20 @@
 // @ts-nocheck
 // JC approved nocheck 2026-08-11
-
 import dotenv from "dotenv";
 dotenv.config({ path: "../.env" });
-
 import express from "express";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../../generated/prisma/client.js";
+import cors from "cors";
 
-const router = express.Router();
+
+import jwt from "jsonwebtoken";
+import passport from "passport";
+import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+
+
+const mealRouter = express.Router();
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
@@ -16,49 +22,112 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter });
 
-// GET all meals
-router.get("/meals", async (req, res) => {
-  try {
-    const meals = await prisma.meal.findMany({
-      include: {
-        items: true,
-      },
-      orderBy: {
-        date: "desc",
-      },
-    });
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET){
+  throw new Error("JWT SECRET not set. copy to .env first");
+}
+passport.use(
+  new JwtStrategy(
+    {
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: JWT_SECRET,
+    },
+    async (payload, done) => {
+      const user = await prisma.user.findUnique({ where: { id: payload.sub } });
+      return done(null, user ?? false);
+      console.log("USER:", user);
+    }
+  )
+);
 
-    res.json(meals);
+
+
+
+
+// GET all meals
+mealRouter.get("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
+  try {
+    const user = req.user;
+    console.log(req.user.id);
+  
+    const meals = await prisma.meal.findMany({
+      where: {userId: req.user.id},
+      orderBy: {date: "desc"},
+      include: {
+        items: true
+      }
+    });
+    
+    const byDate: Record<string,{date:string;protein:number;calories:number;fat:number;carbs:number;}>={};
+
+    for (const m of meals){
+      for (const j of m.items){
+        const key = m.date.toISOString().split("T")[0];
+        if (!byDate[key]){
+        byDate[key]={date:key,protein:0, carbs:0,calories:0,fat:0};
+        };
+        byDate[key].calories+=Number(j.calories);
+        byDate[key].protein+=Number(j.protein);
+        byDate[key].fat+=Number(j.fat);
+        byDate[key].carbs+=Number(j.carbs);
+      }
+    }
+     
+
+   
+
+    
+    //res.json(byDate);
+    res.json(Object.values(byDate));
+ 
   } catch (error) {
     console.error(error);
     res.status(500).json({ 
       error: "Failed to get meals" });
   }
+
 });
 
 
 
 
 // POST a meal
-router.post("/meals", async (req, res) => {
+mealRouter.post("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
+ 
+
+  console.log(req.body.breakfast[0]);
   try {
-    const { mealType, date, totalCalories, items } = req.body;
+    const { foodName, date, quantity, calories, protein, carbs, fat} = req.body.breakfast[0];
+
+     const user = req.user;
+     if (!user.id) {
+      return res.status(400).json({
+        error: "uuid is required",
+      });
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found",
+      });
+    }
+
+
 
     const meal = await prisma.meal.create({
       data: {
-        mealType,
+        mealType: "BREAKFAST",
+        userId: user.id,
         date: new Date(date),
-        totalCalories: totalCalories ?? 0,
-
         items: {
-          create: items?.map((item: any) => ({
-            foodName: item.foodName,
-            quantity: item.quantity,
-            calories: item.calories,
-            protein: item.protein,
-            carbs: item.carbs,
-            fat: item.fat,
-          })) ?? [],
+          create: {
+            foodName: foodName,
+            portion: quantity,
+            calories: parseFloat(calories),
+            protein: parseFloat(protein),
+            carbs: parseFloat(carbs),
+            fat: parseFloat(fat),
+          }
         },
       },
       include: {
@@ -75,103 +144,159 @@ router.post("/meals", async (req, res) => {
   }
 });
 
-// GET one meal
-router.get("/meals/:id", async (req, res) => {
+/* GET one meal
+  mealRouter.get("/meals/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
 
-    const meal = await prisma.meal.findUnique({
-      where: {
-        id: id,
-      },
-      include: {
-        items: true,
-      },
-    });
+// GET one meal for logged-in user
+router.get("/meal/:id", passport.authenticate("jwt", { session: false }), async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const user = req.user;
 
-    if (!meal) {
-      return res.status(404).json({
-        error: "Meal not found",
+      if (!user) {
+        return res.status(404).json({
+          error: "User not found",
+        });
+      }
+
+      const meal = await prisma.meal.findFirst({
+        where: {
+          id: id,
+          userId: user.id,
+        },
+        include: {
+          items: true,
+        },
+      });
+
+      if (!meal) {
+        return res.status(404).json({
+          error: "Meal not found",
+        });
+      }
+
+      res.status(200).json(meal);
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Failed to get meal",
       });
     }
-
-    res.json(meal);
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: "Failed to get meal",
-    });
   }
-});
+);
 
 // UPDATE a meal
-router.put("/meals/:id", async (req, res) => {
+mealRouter.put("/meals/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
 
-    const { mealType, date, totalCalories, items } = req.body;
+// UPDATE a meal
+router.put("/meal/:id", passport.authenticate("jwt", { session: false }),async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const user = req.user;
 
-    const meal = await prisma.meal.update({
-      where: {
-        id: id,
-      },
-      data: {
-        mealType,
-        date: new Date(date),
-        totalCalories,
+      if (!user) {
+        return res.status(404).json({
+          error: "User not found",
+        });
+      }
 
-        items: {
-          deleteMany: {},
-          create: items,
+      const { mealType, date, items } = req.body;
+
+      const existingMeal = await prisma.meal.findFirst({
+        where: {
+          id: id,
+          userId: user.id,
         },
-      },
-      include: {
-        items: true,
-      },
-    });
+      });
 
-    res.json(meal);
-  } catch (error) {
-    console.error(error);
+      if (!existingMeal) {
+        return res.status(404).json({
+          error: "Meal not found",
+        });
+      }
 
-    res.status(500).json({
-      error: "Failed to update meal",
-    });
+      const meal = await prisma.meal.update({
+        where: {
+          id: id,
+        },
+        data: {
+          mealType,
+          date: new Date(date),
+
+          items: {
+            deleteMany: {},
+            create: items,
+          },
+        },
+        include: {
+          items: true,
+        },
+      });
+
+      res.status(200).json(meal);
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Failed to update meal",
+      });
+    }
   }
 });
 // DELETE a meal
-router.delete("/meals/:id", async (req, res) => {
+mealRouter.delete("/meals/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
 
-    const meal = await prisma.meal.findUnique({
-      where: {
-        id: id,
-      },
-    });
 
-    if (!meal) {
-      return res.status(404).json({
-        error: "Meal not found",
+
+// DELETE a meal
+router.delete("/meal/:id",passport.authenticate("jwt", { session: false }),async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const user = req.user;
+
+      if (!user) {
+        return res.status(404).json({
+          error: "User not found",
+        });
+      }
+
+      const meal = await prisma.meal.findFirst({
+        where: {
+          id: id,
+          userId: user.id,
+        },
+      });
+
+      if (!meal) {
+        return res.status(404).json({
+          error: "Meal not found",
+        });
+      }
+
+      await prisma.meal.delete({
+        where: {
+          id: id,
+        },
+      });
+
+      res.status(200).json({
+        message: "Meal deleted successfully",
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Failed to delete meal",
       });
     }
-
-    await prisma.meal.delete({
-      where: {
-        id: id,
-      },
-    });
-
-    res.json({
-      message: "Meal deleted successfully",
-    });
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: "Failed to delete meal",
-    });
   }
 });
-export default router;
+*/
+export default mealRouter;
