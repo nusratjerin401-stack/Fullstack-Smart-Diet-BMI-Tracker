@@ -45,23 +45,47 @@ passport.use(
 
 
 // GET all meals
-mealRouter.get("/meals", async (req, res) => {
+mealRouter.get("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
   try {
+    const user = req.user;
+    console.log(req.user.id);
+  
     const meals = await prisma.meal.findMany({
+      where: {userId: req.user.id},
+      orderBy: {date: "desc"},
       include: {
-        items: true,
-      },
-      orderBy: {
-        date: "desc",
-      },
+        items: true
+      }
     });
+    
+    const byDate: Record<string,{date:string;protein:number;calories:number;fat:number;carbs:number;}>={};
 
-    res.json(meals);
+    for (const m of meals){
+      for (const j of m.items){
+        const key = m.date.toISOString().split("T")[0];
+        if (!byDate[key]){
+        byDate[key]={date:key,protein:0, carbs:0,calories:0,fat:0};
+        };
+        byDate[key].calories+=Number(j.calories);
+        byDate[key].protein+=Number(j.protein);
+        byDate[key].fat+=Number(j.fat);
+        byDate[key].carbs+=Number(j.carbs);
+      }
+    }
+     
+
+   
+
+    
+    //res.json(byDate);
+    res.json(Object.values(byDate));
+ 
   } catch (error) {
     console.error(error);
     res.status(500).json({ 
       error: "Failed to get meals" });
   }
+
 });
 
 
@@ -120,69 +144,108 @@ mealRouter.post("/meal", passport.authenticate("jwt", { session: false }), async
   }
 });
 
-// GET one meal
+/* GET one meal
   mealRouter.get("/meals/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
 
-    const meal = await prisma.meal.findUnique({
-      where: {
-        id: id,
-      },
-      include: {
-        items: true,
-      },
-    });
+// GET one meal for logged-in user
+router.get("/meal/:id", passport.authenticate("jwt", { session: false }), async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const user = req.user;
 
-    if (!meal) {
-      return res.status(404).json({
-        error: "Meal not found",
+      if (!user) {
+        return res.status(404).json({
+          error: "User not found",
+        });
+      }
+
+      const meal = await prisma.meal.findFirst({
+        where: {
+          id: id,
+          userId: user.id,
+        },
+        include: {
+          items: true,
+        },
+      });
+
+      if (!meal) {
+        return res.status(404).json({
+          error: "Meal not found",
+        });
+      }
+
+      res.status(200).json(meal);
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Failed to get meal",
       });
     }
-
-    res.json(meal);
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: "Failed to get meal",
-    });
   }
-});
+);
 
 // UPDATE a meal
 mealRouter.put("/meals/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
 
-    const { mealType, date, totalCalories, items } = req.body;
+// UPDATE a meal
+router.put("/meal/:id", passport.authenticate("jwt", { session: false }),async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const user = req.user;
 
-    const meal = await prisma.meal.update({
-      where: {
-        id: id,
-      },
-      data: {
-        mealType,
-        date: new Date(date),
-        totalCalories,
+      if (!user) {
+        return res.status(404).json({
+          error: "User not found",
+        });
+      }
 
-        items: {
-          deleteMany: {},
-          create: items,
+      const { mealType, date, items } = req.body;
+
+      const existingMeal = await prisma.meal.findFirst({
+        where: {
+          id: id,
+          userId: user.id,
         },
-      },
-      include: {
-        items: true,
-      },
-    });
+      });
 
-    res.json(meal);
-  } catch (error) {
-    console.error(error);
+      if (!existingMeal) {
+        return res.status(404).json({
+          error: "Meal not found",
+        });
+      }
 
-    res.status(500).json({
-      error: "Failed to update meal",
-    });
+      const meal = await prisma.meal.update({
+        where: {
+          id: id,
+        },
+        data: {
+          mealType,
+          date: new Date(date),
+
+          items: {
+            deleteMany: {},
+            create: items,
+          },
+        },
+        include: {
+          items: true,
+        },
+      });
+
+      res.status(200).json(meal);
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Failed to update meal",
+      });
+    }
   }
 });
 // DELETE a meal
@@ -190,33 +253,50 @@ mealRouter.delete("/meals/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
 
-    const meal = await prisma.meal.findUnique({
-      where: {
-        id: id,
-      },
-    });
 
-    if (!meal) {
-      return res.status(404).json({
-        error: "Meal not found",
+
+// DELETE a meal
+router.delete("/meal/:id",passport.authenticate("jwt", { session: false }),async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const user = req.user;
+
+      if (!user) {
+        return res.status(404).json({
+          error: "User not found",
+        });
+      }
+
+      const meal = await prisma.meal.findFirst({
+        where: {
+          id: id,
+          userId: user.id,
+        },
+      });
+
+      if (!meal) {
+        return res.status(404).json({
+          error: "Meal not found",
+        });
+      }
+
+      await prisma.meal.delete({
+        where: {
+          id: id,
+        },
+      });
+
+      res.status(200).json({
+        message: "Meal deleted successfully",
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Failed to delete meal",
       });
     }
-
-    await prisma.meal.delete({
-      where: {
-        id: id,
-      },
-    });
-
-    res.json({
-      message: "Meal deleted successfully",
-    });
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: "Failed to delete meal",
-    });
   }
 });
+*/
 export default mealRouter;
