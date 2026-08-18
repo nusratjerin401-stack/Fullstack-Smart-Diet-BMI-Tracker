@@ -168,7 +168,7 @@ mealRouter.post("/meal", passport.authenticate("jwt", { session: false }), async
     const id = Number(req.params.id);
 
 // GET one meal for logged-in user
-router.get("/meal/:id", passport.authenticate("jwt", { session: false }), async (req, res) => {
+router.get("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
     try {
       const id = Number(req.params.id);
       const user = req.user;
