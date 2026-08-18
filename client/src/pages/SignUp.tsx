@@ -46,7 +46,7 @@ const SignUp: React.FC = () => {
       });
 
       const data = await response.json();
-
+      console.log(signUpData);
       console.log('Sign up:', data);
 
       if (response.ok) {
