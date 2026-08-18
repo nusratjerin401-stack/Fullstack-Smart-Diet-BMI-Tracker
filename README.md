@@ -144,6 +144,7 @@ The user's activity type and frequency will be mapped to an activity category.
 The activity category will be used to determine the user's daily calorie needs.
 
 ### 3. Daily Recommended Values (DRV)
+
 Daily Recommended Values are nutrition targets used to compare a user's daily nutrient intake with recommended amounts.
 
 Examples include:
@@ -152,6 +153,13 @@ Examples include:
 - Carbohydrates
 - Fat
 - Cholesterol
+
+# Daily Values Calculation
+ %DV= ( anount the user ate % Daily Values) * 100
+
+For example: if a food contains 15 g of fat:
+%DV = (15 % 78) * 100
+%DV = 19.2%
 
 Some nutrients have recommended minimum amounts, while others have recommended maximum limits. Recommended values may vary based on factors such as age and sex.
 
