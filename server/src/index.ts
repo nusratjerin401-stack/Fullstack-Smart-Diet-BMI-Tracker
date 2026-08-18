@@ -8,7 +8,8 @@ import dayMealsRouter from "./dayMeals.js";
 import intakeRoutes from "./routes/intake.js";
 import signupRoutes from "./routes/sign-up.js";
 import loginRoutes from "./routes/login.js";
-//@ts-ignore
+import foodSearchRoutes from "./routes/foodSearch.js";
+
 const app = express();
 
 
@@ -28,6 +29,7 @@ app.use("/", loginRoutes);
 // API routes
 app.use("/api", mealRoutes);
 app.use("/api", intakeRoutes);
+app.use("/api", foodSearchRoutes);
 
 const PORT = 3000;
 
