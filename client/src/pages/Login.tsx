@@ -24,15 +24,19 @@ import {
   IonItemGroup,
   IonItemDivider
 } from '@ionic/react';
+import useAuthStore from '../store/useAuthStore';
+
 
 const Login = () => {
-
+    const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
     const history = useHistory();
+    const setToken = useAuthStore((state) => state.setToken);
 
     const [loginData, setLoginData] = useState({
         email: '',
         password: ''
     });
+
 
     const submitLogin = async () => {
     try
@@ -44,11 +48,12 @@ const Login = () => {
           'Content-type': 'application/json'
         },
         body: JSON.stringify(loginData)
-      });
-  
+      })
+    
       const data = await response.json();
-
+      setToken(data.token);
       console.log('Saved',data);
+      history.push('/home');
 
     } catch (error){
       console.log(error);
@@ -109,7 +114,8 @@ const Login = () => {
                         <IonButton 
                         expand="block"
                         className="login-button" 
-                        onClick={submitLogin}>
+                        onClick={submitLogin}
+                        >
                             Login 
                         </IonButton>
                     </div>

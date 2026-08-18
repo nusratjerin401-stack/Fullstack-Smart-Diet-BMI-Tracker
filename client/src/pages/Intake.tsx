@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar,IonList,IonItem, IonInput, IonRadioGroup, IonRadio, IonLabel, IonSelect, IonSelectOption, IonItemGroup, IonItemDivider, IonButton} from '@ionic/react';
 import './Intake.css';
+import useAuthStore from '../store/useAuthStore';
+
 
 const Intake = () => {
+  const token = useAuthStore((state) => state.token);
   const [FormData, setFormData] = useState({
     age: 0,
     sex: '',
@@ -22,7 +25,8 @@ const Intake = () => {
       'http://localhost:3000/survey',{
         method: 'POST',
         headers: {
-          'Content-type': 'application/json'
+          'Content-type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(FormData)
       });
@@ -33,6 +37,9 @@ const Intake = () => {
 
     } catch (error){
       console.log(error);
+      console.log(token);
+      console.log(FormData);
+      
     }
   }
   

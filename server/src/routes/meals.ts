@@ -1,22 +1,20 @@
 // @ts-nocheck
 // JC approved nocheck 2026-08-11
-
 import dotenv from "dotenv";
 dotenv.config({ path: "../.env" });
-
-
-
 import express from "express";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../../generated/prisma/client.js";
 import cors from "cors";
+
 
 import jwt from "jsonwebtoken";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 
-const router = express.Router();
+
+const mealRouter = express.Router();
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
@@ -42,46 +40,59 @@ passport.use(
   )
 );
 
+
+
+
+
 // GET all meals
-router.get( "/meal",passport.authenticate("jwt", { session: false }),
-async (req, res) => {
-    try {
-      const user = req.user;
-
-      if (!user) {
-        return res.status(404).json({
-          error: "User not found",
-        });
+mealRouter.get("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
+  try {
+    const user = req.user;
+    console.log(req.user.id);
+  
+    const meals = await prisma.meal.findMany({
+      where: {userId: req.user.id},
+      orderBy: {date: "desc"},
+      include: {
+        items: true
       }
+    });
+    
+    const byDate: Record<string,{date:string;protein:number;calories:number;fat:number;carbs:number;}>={};
 
-      const meals = await prisma.meal.findMany({
-        where: {
-          userId: user.id,
-        },
-        include: {
-          items: true,
-        },
-        orderBy: {
-          date: "desc",
-        },
-      });
-
-      res.status(200).json(meals);
-    } catch (error) {
-      console.error(error);
-
-      res.status(500).json({
-        error: "Failed to get meals",
-      });
+    for (const m of meals){
+      for (const j of m.items){
+        const key = m.date.toISOString().split("T")[0];
+        if (!byDate[key]){
+        byDate[key]={date:key,protein:0, carbs:0,calories:0,fat:0};
+        };
+        byDate[key].calories+=Number(j.calories);
+        byDate[key].protein+=Number(j.protein);
+        byDate[key].fat+=Number(j.fat);
+        byDate[key].carbs+=Number(j.carbs);
+      }
     }
+     
+
+   
+
+    
+    //res.json(byDate);
+    res.json(Object.values(byDate));
+ 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ 
+      error: "Failed to get meals" });
   }
-);
+
+});
 
 
 
 
 // POST a meal
-router.post("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
+mealRouter.post("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
  
 
   console.log(req.body.breakfast[0]);
@@ -133,6 +144,10 @@ router.post("/meal", passport.authenticate("jwt", { session: false }), async (re
   }
 });
 
+/* GET one meal
+  mealRouter.get("/meals/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
 
 // GET one meal for logged-in user
 router.get("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
@@ -173,6 +188,10 @@ router.get("/meal", passport.authenticate("jwt", { session: false }), async (req
   }
 );
 
+// UPDATE a meal
+mealRouter.put("/meals/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
 
 // UPDATE a meal
 router.put("/meal/:id", passport.authenticate("jwt", { session: false }),async (req, res) => {
@@ -228,7 +247,11 @@ router.put("/meal/:id", passport.authenticate("jwt", { session: false }),async (
       });
     }
   }
-);
+});
+// DELETE a meal
+mealRouter.delete("/meals/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
 
 
 
@@ -274,5 +297,6 @@ router.delete("/meal/:id",passport.authenticate("jwt", { session: false }),async
       });
     }
   }
-);
-export default router;
+});
+*/
+export default mealRouter;
