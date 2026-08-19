@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar,IonList,IonItem, IonInput, IonRadioGroup, IonRadio, IonLabel, IonSelect, IonSelectOption, IonItemGroup, IonItemDivider, IonButton} from '@ionic/react';
 import './Intake.css';
 import useAuthStore from '../store/useAuthStore';
-
+import { useIonRouter } from '@ionic/react';
 
 const Intake = () => {
+  const navigation = useIonRouter();
   const token = useAuthStore((state) => state.token);
   const [FormData, setFormData] = useState({
     age: 0,
@@ -34,7 +35,6 @@ const Intake = () => {
       const data = await response.json();
 
       console.log('Saved',data);
-
     } catch (error){
       console.log(error);
       console.log(token);
@@ -241,7 +241,9 @@ const Intake = () => {
         <IonButton 
         expand="block"
         className="submit-button" 
-        onClick={submitForm}>
+          onClick={() => {
+	    navigation.push('/home');
+	  }}>
           Submit
         </IonButton>
 
