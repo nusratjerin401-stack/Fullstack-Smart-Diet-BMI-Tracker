@@ -1,0 +1,46 @@
+.dashboard-content {
+  --background: #0a0a0a;
+  padding: 24px;
+}
+
+.dashboard-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 16px 0;
+  padding: 0;
+}
+
+.charts-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.chart-card {
+  flex: 1 1 480px;
+  min-width: 320px;
+  background: #111214;
+  border: 1px solid #26272b;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-card-body {
+  flex: 1;
+  min-height: 380px;
+  width: 100%;
+}
+
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 380px;
+  color: #888;
+  font-size: 0.95rem;
+}
+

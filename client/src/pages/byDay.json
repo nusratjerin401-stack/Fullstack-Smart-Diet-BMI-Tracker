@@ -1,0 +1,632 @@
+[
+    {
+        "date": "2026-08-19",
+        "protein": 141,
+        "carbs": 212,
+        "calories": 1694,
+        "fat": 70
+    },
+    {
+        "date": "2026-08-18",
+        "protein": 143,
+        "carbs": 256,
+        "calories": 1751,
+        "fat": 77
+    },
+    {
+        "date": "2026-08-17",
+        "protein": 30,
+        "carbs": 59,
+        "calories": 381,
+        "fat": 38
+    },
+    {
+        "date": "2026-08-16",
+        "protein": 73,
+        "carbs": 136,
+        "calories": 1877,
+        "fat": 85
+    },
+    {
+        "date": "2026-08-15",
+        "protein": 81,
+        "carbs": 207,
+        "calories": 1838,
+        "fat": 60
+    },
+    {
+        "date": "2026-08-14",
+        "protein": 167,
+        "carbs": 181,
+        "calories": 2159,
+        "fat": 63
+    },
+    {
+        "date": "2026-08-13",
+        "protein": 133,
+        "carbs": 135,
+        "calories": 2099,
+        "fat": 44
+    },
+    {
+        "date": "2026-08-12",
+        "protein": 119,
+        "carbs": 229,
+        "calories": 1749,
+        "fat": 73
+    },
+    {
+        "date": "2026-08-11",
+        "protein": 79,
+        "carbs": 131,
+        "calories": 1450,
+        "fat": 46
+    },
+    {
+        "date": "2026-08-10",
+        "protein": 130,
+        "carbs": 175,
+        "calories": 1844,
+        "fat": 81
+    },
+    {
+        "date": "2026-08-09",
+        "protein": 93,
+        "carbs": 169,
+        "calories": 1615,
+        "fat": 74
+    },
+    {
+        "date": "2026-08-08",
+        "protein": 107,
+        "carbs": 214,
+        "calories": 2096,
+        "fat": 46
+    },
+    {
+        "date": "2026-08-07",
+        "protein": 133,
+        "carbs": 248,
+        "calories": 2001,
+        "fat": 54
+    },
+    {
+        "date": "2026-08-06",
+        "protein": 143,
+        "carbs": 252,
+        "calories": 1478,
+        "fat": 83
+    },
+    {
+        "date": "2026-08-05",
+        "protein": 22,
+        "carbs": 63,
+        "calories": 429,
+        "fat": 31
+    },
+    {
+        "date": "2026-08-04",
+        "protein": 73,
+        "carbs": 143,
+        "calories": 2125,
+        "fat": 76
+    },
+    {
+        "date": "2026-08-03",
+        "protein": 161,
+        "carbs": 222,
+        "calories": 2066,
+        "fat": 45
+    },
+    {
+        "date": "2026-08-02",
+        "protein": 98,
+        "carbs": 222,
+        "calories": 2052,
+        "fat": 80
+    },
+    {
+        "date": "2026-08-01",
+        "protein": 160,
+        "carbs": 138,
+        "calories": 1564,
+        "fat": 53
+    },
+    {
+        "date": "2026-07-31",
+        "protein": 636,
+        "carbs": 642,
+        "calories": 2314,
+        "fat": 426
+    },
+    {
+        "date": "2026-07-30",
+        "protein": 71,
+        "carbs": 131,
+        "calories": 2195,
+        "fat": 74
+    },
+    {
+        "date": "2026-07-29",
+        "protein": 140,
+        "carbs": 238,
+        "calories": 1850,
+        "fat": 75
+    },
+    {
+        "date": "2026-07-28",
+        "protein": 135,
+        "carbs": 126,
+        "calories": 1564,
+        "fat": 49
+    },
+    {
+        "date": "2026-07-27",
+        "protein": 696,
+        "carbs": 608,
+        "calories": 2452,
+        "fat": 480
+    },
+    {
+        "date": "2026-07-26",
+        "protein": 539,
+        "carbs": 550,
+        "calories": 2691,
+        "fat": 471
+    },
+    {
+        "date": "2026-07-25",
+        "protein": 24,
+        "carbs": 25,
+        "calories": 539,
+        "fat": 26
+    },
+    {
+        "date": "2026-07-24",
+        "protein": 111,
+        "carbs": 238,
+        "calories": 1458,
+        "fat": 75
+    },
+    {
+        "date": "2026-07-23",
+        "protein": 154,
+        "carbs": 220,
+        "calories": 1895,
+        "fat": 86
+    },
+    {
+        "date": "2026-07-22",
+        "protein": 167,
+        "carbs": 245,
+        "calories": 1824,
+        "fat": 82
+    },
+    {
+        "date": "2026-07-21",
+        "protein": 74,
+        "carbs": 232,
+        "calories": 1822,
+        "fat": 83
+    },
+    {
+        "date": "2026-07-20",
+        "protein": 100,
+        "carbs": 122,
+        "calories": 2073,
+        "fat": 55
+    },
+    {
+        "date": "2026-07-19",
+        "protein": 43,
+        "carbs": 75,
+        "calories": 448,
+        "fat": 19
+    },
+    {
+        "date": "2026-07-18",
+        "protein": 109,
+        "carbs": 143,
+        "calories": 1583,
+        "fat": 73
+    },
+    {
+        "date": "2026-07-17",
+        "protein": 111,
+        "carbs": 181,
+        "calories": 2143,
+        "fat": 76
+    },
+    {
+        "date": "2026-07-16",
+        "protein": 575,
+        "carbs": 512,
+        "calories": 2250,
+        "fat": 436
+    },
+    {
+        "date": "2026-07-15",
+        "protein": 84,
+        "carbs": 122,
+        "calories": 1708,
+        "fat": 51
+    },
+    {
+        "date": "2026-07-14",
+        "protein": 146,
+        "carbs": 127,
+        "calories": 2127,
+        "fat": 69
+    },
+    {
+        "date": "2026-07-13",
+        "protein": 139,
+        "carbs": 143,
+        "calories": 2030,
+        "fat": 47
+    },
+    {
+        "date": "2026-07-12",
+        "protein": 117,
+        "carbs": 234,
+        "calories": 1708,
+        "fat": 44
+    },
+    {
+        "date": "2026-07-11",
+        "protein": 123,
+        "carbs": 180,
+        "calories": 1664,
+        "fat": 41
+    },
+    {
+        "date": "2026-07-10",
+        "protein": 54,
+        "carbs": 68,
+        "calories": 413,
+        "fat": 11
+    },
+    {
+        "date": "2026-07-09",
+        "protein": 156,
+        "carbs": 129,
+        "calories": 1857,
+        "fat": 84
+    },
+    {
+        "date": "2026-07-08",
+        "protein": 106,
+        "carbs": 134,
+        "calories": 1770,
+        "fat": 75
+    },
+    {
+        "date": "2026-07-07",
+        "protein": 160,
+        "carbs": 214,
+        "calories": 1435,
+        "fat": 63
+    },
+    {
+        "date": "2026-07-06",
+        "protein": 134,
+        "carbs": 230,
+        "calories": 2018,
+        "fat": 77
+    },
+    {
+        "date": "2026-07-05",
+        "protein": 78,
+        "carbs": 237,
+        "calories": 1917,
+        "fat": 65
+    },
+    {
+        "date": "2026-07-04",
+        "protein": 97,
+        "carbs": 130,
+        "calories": 1730,
+        "fat": 72
+    },
+    {
+        "date": "2026-07-03",
+        "protein": 92,
+        "carbs": 212,
+        "calories": 2075,
+        "fat": 74
+    },
+    {
+        "date": "2026-07-02",
+        "protein": 113,
+        "carbs": 154,
+        "calories": 1510,
+        "fat": 85
+    },
+    {
+        "date": "2026-07-01",
+        "protein": 166,
+        "carbs": 123,
+        "calories": 1580,
+        "fat": 89
+    },
+    {
+        "date": "2026-06-30",
+        "protein": 680,
+        "carbs": 578,
+        "calories": 2203,
+        "fat": 412
+    },
+    {
+        "date": "2026-06-29",
+        "protein": 96,
+        "carbs": 198,
+        "calories": 1946,
+        "fat": 61
+    },
+    {
+        "date": "2026-06-28",
+        "protein": 128,
+        "carbs": 185,
+        "calories": 1483,
+        "fat": 66
+    },
+    {
+        "date": "2026-06-27",
+        "protein": 157,
+        "carbs": 121,
+        "calories": 1489,
+        "fat": 80
+    },
+    {
+        "date": "2026-06-26",
+        "protein": 126,
+        "carbs": 213,
+        "calories": 1949,
+        "fat": 89
+    },
+    {
+        "date": "2026-06-25",
+        "protein": 612,
+        "carbs": 551,
+        "calories": 2789,
+        "fat": 460
+    },
+    {
+        "date": "2026-06-24",
+        "protein": 142,
+        "carbs": 203,
+        "calories": 2089,
+        "fat": 89
+    },
+    {
+        "date": "2026-06-23",
+        "protein": 169,
+        "carbs": 219,
+        "calories": 2156,
+        "fat": 56
+    },
+    {
+        "date": "2026-06-22",
+        "protein": 136,
+        "carbs": 249,
+        "calories": 2056,
+        "fat": 68
+    },
+    {
+        "date": "2026-06-21",
+        "protein": 82,
+        "carbs": 157,
+        "calories": 1957,
+        "fat": 47
+    },
+    {
+        "date": "2026-06-20",
+        "protein": 87,
+        "carbs": 206,
+        "calories": 1580,
+        "fat": 43
+    },
+    {
+        "date": "2026-06-19",
+        "protein": 141,
+        "carbs": 244,
+        "calories": 1410,
+        "fat": 83
+    },
+    {
+        "date": "2026-06-18",
+        "protein": 29,
+        "carbs": 36,
+        "calories": 201,
+        "fat": 27
+    },
+    {
+        "date": "2026-06-17",
+        "protein": 123,
+        "carbs": 159,
+        "calories": 1434,
+        "fat": 69
+    },
+    {
+        "date": "2026-06-16",
+        "protein": 102,
+        "carbs": 128,
+        "calories": 2123,
+        "fat": 49
+    },
+    {
+        "date": "2026-06-15",
+        "protein": 634,
+        "carbs": 560,
+        "calories": 2692,
+        "fat": 401
+    },
+    {
+        "date": "2026-06-14",
+        "protein": 159,
+        "carbs": 251,
+        "calories": 2140,
+        "fat": 46
+    },
+    {
+        "date": "2026-06-13",
+        "protein": 168,
+        "carbs": 258,
+        "calories": 1462,
+        "fat": 81
+    },
+    {
+        "date": "2026-06-12",
+        "protein": 90,
+        "carbs": 170,
+        "calories": 1584,
+        "fat": 69
+    },
+    {
+        "date": "2026-06-11",
+        "protein": 166,
+        "carbs": 131,
+        "calories": 2144,
+        "fat": 41
+    },
+    {
+        "date": "2026-06-10",
+        "protein": 89,
+        "carbs": 136,
+        "calories": 1892,
+        "fat": 84
+    },
+    {
+        "date": "2026-06-09",
+        "protein": 44,
+        "carbs": 47,
+        "calories": 267,
+        "fat": 23
+    },
+    {
+        "date": "2026-06-08",
+        "protein": 77,
+        "carbs": 205,
+        "calories": 2142,
+        "fat": 65
+    },
+    {
+        "date": "2026-06-07",
+        "protein": 143,
+        "carbs": 257,
+        "calories": 2063,
+        "fat": 58
+    },
+    {
+        "date": "2026-06-06",
+        "protein": 132,
+        "carbs": 236,
+        "calories": 1701,
+        "fat": 42
+    },
+    {
+        "date": "2026-06-05",
+        "protein": 150,
+        "carbs": 213,
+        "calories": 1895,
+        "fat": 50
+    },
+    {
+        "date": "2026-06-04",
+        "protein": 91,
+        "carbs": 253,
+        "calories": 2100,
+        "fat": 50
+    },
+    {
+        "date": "2026-06-03",
+        "protein": 60,
+        "carbs": 71,
+        "calories": 476,
+        "fat": 16
+    },
+    {
+        "date": "2026-06-02",
+        "protein": 82,
+        "carbs": 138,
+        "calories": 1886,
+        "fat": 73
+    },
+    {
+        "date": "2026-06-01",
+        "protein": 52,
+        "carbs": 50,
+        "calories": 331,
+        "fat": 32
+    },
+    {
+        "date": "2026-05-31",
+        "protein": 97,
+        "carbs": 145,
+        "calories": 1750,
+        "fat": 61
+    },
+    {
+        "date": "2026-05-30",
+        "protein": 106,
+        "carbs": 158,
+        "calories": 1467,
+        "fat": 49
+    },
+    {
+        "date": "2026-05-29",
+        "protein": 102,
+        "carbs": 144,
+        "calories": 1765,
+        "fat": 69
+    },
+    {
+        "date": "2026-05-28",
+        "protein": 157,
+        "carbs": 222,
+        "calories": 2147,
+        "fat": 69
+    },
+    {
+        "date": "2026-05-27",
+        "protein": 541,
+        "carbs": 535,
+        "calories": 2749,
+        "fat": 434
+    },
+    {
+        "date": "2026-05-26",
+        "protein": 20,
+        "carbs": 69,
+        "calories": 412,
+        "fat": 29
+    },
+    {
+        "date": "2026-05-25",
+        "protein": 103,
+        "carbs": 143,
+        "calories": 1434,
+        "fat": 88
+    },
+    {
+        "date": "2026-05-24",
+        "protein": 94,
+        "carbs": 220,
+        "calories": 1715,
+        "fat": 86
+    },
+    {
+        "date": "2026-05-23",
+        "protein": 163,
+        "carbs": 187,
+        "calories": 1502,
+        "fat": 79
+    },
+    {
+        "date": "2026-05-22",
+        "protein": 23,
+        "carbs": 55,
+        "calories": 375,
+        "fat": 29
+    }
+]
