@@ -17,14 +17,14 @@ ion-content {
 }
 
 .signup-card {
-  background: white;
+//  background: white;
   padding: 25px;
   border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .signup-card ion-item {
-  --background: white;
+//  --background: white;
   margin-bottom: 12px;
 }
 
