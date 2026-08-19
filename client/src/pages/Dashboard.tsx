@@ -29,26 +29,29 @@ const data: ChartData[] = [
 const Dashboard: React.FC = () => {
   return (
     <IonPage>
-   
-      <div >
+      
+      <div style={{height: '30vh'}} >
         <IonTitle> Nutrients over Time </IonTitle>
         <ResponsiveContainer>
-         <LineChart
-         //data = {data}
-         //margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-         >
-         
+          <LineChart
+            data = {data}
+            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" stroke="var(--color-text-3)" />
-            <YAxis width={50} stroke="var(--color-text-3)" />
-            
-        <Tooltip />
-        <Legend />
-        </LineChart>
+            <YAxis width={50} stroke="var(--color-text-3)" />  
+            <Tooltip />
+            <Legend />
+	    <Line 
+              type="monotone" 
+              dataKey="value" 
+              stroke="#82ca9d" 
+            />
+          </LineChart>
         </ResponsiveContainer>
-      
+	
       </div>
-   
+      
     </IonPage>
   );
 };
