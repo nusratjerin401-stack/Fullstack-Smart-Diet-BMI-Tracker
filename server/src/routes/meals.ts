@@ -34,8 +34,9 @@ passport.use(
     },
     async (payload, done) => {
       const user = await prisma.user.findUnique({ where: { id: payload.sub } });
-      return done(null, user ?? false);
       console.log("USER:", user);
+      return done(null, user ?? false);
+      
     }
   )
 );
@@ -46,6 +47,7 @@ passport.use(
 
 // GET all meals
 mealRouter.get("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
+  
   try {
     const user = req.user;
     console.log(req.user.id);
@@ -92,83 +94,62 @@ mealRouter.get("/meal", passport.authenticate("jwt", { session: false }), async 
 
 
 // POST a meal
-mealRouter.post("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
- 
-  //console.log(req.body);
-  for (const m of req.body){
-  
+mealRouter.post("/meal",passport.authenticate("jwt", { session: false }),async (req, res) => {
+for (const m of req.body) {
+      try {
+        const {
+          foodName,
+          date,
+          quantity,
+          calories,
+          protein,
+          carbs,
+          fat,
+          mealType
+        } = m;
 
+        const user = req.user;
 
-  try {
-    const { foodName, date, quantity, calories, protein, carbs, fat, mealType} = req.body[m];
+        if (!user) {
+          return res.status(404).json({
+            error: "User not found",
+          });
+        }
 
-    const existingRecord = await prisma.mealItem.findUnique({
-    where: {
-      foodName: foodName,
-      date: date,
-      quantity: quantity,
-      calories: calories,
-      protein: protein,
-      carbs: carbs,
-      fat: fat,
-      mealType: mealType
+        const meal = await prisma.meal.create({
+          data: {
+            mealType: mealType.toUpperCase(),
+            userId: user.id,
+            date: new Date(date),
+            items: {
+              create: {
+                foodName: foodName,
+                portion: String(quantity),
+                calories: parseFloat(calories),
+                protein: parseFloat(protein),
+                carbs: parseFloat(carbs),
+                fat: parseFloat(fat),
+              }
+            },
+          },
+          include: {
+            items: true,
+          },
+        });
+
+        return res.status(201).json(meal);
+
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+          error: "Failed to create meal",
+        });
+      }
     }
-    });
-
-     const user = req.user;
-     if (!user.id) {
-      return res.status(400).json({
-        error: "uuid is required",
-      });
-    }
-
-    if (!user) {
-      return res.status(404).json({
-        error: "User not found",
-      });
-    }
-
-
-    if (!existingRecord){
-    const meal = await prisma.meal.create({
-      data: {
-        mealType: mealType.toUpperCase(),
-        userId: user.id,
-        date: new Date(date),
-        items: {
-          create: {
-            foodName: foodName,
-            portion: quantity,
-            calories: parseFloat(calories),
-            protein: parseFloat(protein),
-            carbs: parseFloat(carbs),
-            fat: parseFloat(fat),
-          }
-        },
-      },
-      include: {
-        items: true,
-      },
-    })};
-
-    res.status(201).json(meal);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      error: "Failed to create meal",
-    });
   }
-  };
-  
-});
-
-/* GET one meal
-  mealRouter.get("/meals/:id", async (req, res) => {
-  try {
-    const id = Number(req.params.id);
-
+);
 // GET one meal for logged-in user
-router.get("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
+mealRouter.get("/meal", passport.authenticate("jwt", { session: false }), async (req, res) => {
     try {
       const id = Number(req.params.id);
       const user = req.user;
@@ -195,22 +176,23 @@ router.get("/meal", passport.authenticate("jwt", { session: false }), async (req
         });
       }
 
+      return res.status(200).json(meal);
+    } catch (error) {
+      console.error(error);
+      
+
     res.status(500).json({
       error: "Failed to get meal",
     });
-  }*/
+  }
+}
+);
 
 
-
-// UPDATE a meal
-mealRouter.put("/meals/:id", async (req, res) => {
-  try {
-    const id = Number(req.params.id);
-
-// UPDATE a meal
-router.put("/meal/:id", passport.authenticate("jwt", { session: false }),async (req, res) => {
+  // UPDATE a meal
+mealRouter.put("/meal/:id", passport.authenticate("jwt", { session: false }),async (req, res) => {
     try {
-      const id = Number(req.params.id);
+      const id = req.params.id;
       const user = req.user;
 
       if (!user) {
@@ -261,16 +243,14 @@ router.put("/meal/:id", passport.authenticate("jwt", { session: false }),async (
       });
     }
   }
-});
-// DELETE a meal
-mealRouter.delete("/meals/:id", async (req, res) => {
-  try {
-    const id = Number(req.params.id);
+);
+
+
 
 
 
 // DELETE a meal
-router.delete("/meal/:id",passport.authenticate("jwt", { session: false }),async (req, res) => {
+mealRouter.delete("/meal/:id",passport.authenticate("jwt", { session: false }),async (req, res) => {
     try {
       const id = Number(req.params.id);
       const user = req.user;
@@ -300,17 +280,18 @@ router.delete("/meal/:id",passport.authenticate("jwt", { session: false }),async
         },
       });
 
-      res.status(200).json({
+      return res.status(200).json({
         message: "Meal deleted successfully",
       });
+
     } catch (error) {
       console.error(error);
 
-      res.status(500).json({
+      return res.status(500).json({
         error: "Failed to delete meal",
       });
     }
   }
-});
+  );
 
 export default mealRouter;
