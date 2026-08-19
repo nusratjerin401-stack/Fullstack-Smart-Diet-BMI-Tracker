@@ -20,6 +20,8 @@ import {
 
   IonList
 } from '@ionic/react';
+import useAuthStore from '../store/useAuthStore';
+
 
 type Food = {
     foodName: string;
@@ -29,10 +31,11 @@ type Food = {
     protein: string;
     carbs: string;
     fat: string;
+    //mealType: string;
 };
 
 const AddMeal = () => {
-
+    const token = useAuthStore((state) => state.token);
     const emptyFood: Food = {
         foodName: '',
         date: '',
@@ -40,7 +43,8 @@ const AddMeal = () => {
         calories:  '',
         protein:  '',
         carbs:  '',
-        fat:  ''
+        fat:  '',
+        //mealType: ''
     };
 
     const [meals, setMeals] = useState<{
@@ -57,7 +61,7 @@ const AddMeal = () => {
 
     const addFood = (mealType: keyof typeof meals) => {
         const updatedMeals = {...meals};
-
+        const x = mealType;
         updatedMeals[mealType] = [
             ...updatedMeals[mealType],
             {...emptyFood}
@@ -87,25 +91,32 @@ const AddMeal = () => {
     const submitMeals = async () => {
     try
     {
+      const mealsPayload = (Object.keys(meals) as (keyof typeof meals)[]).flatMap(
+        (mealType) =>
+          meals[mealType].map((food) => ({
+            ...food,
+            mealType
+          })))
+      
       const response = await fetch(
-      'http://localhost:3000/meal',{
+      'http://localhost:3000/meals',{
         method: 'POST',
         headers: {
-          'Content-type': 'application/json'
+          'Content-type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(meals),
+        body: JSON.stringify(mealsPayload),
         credentials: "include",
       });
   
       const data = await response.json();
 
       console.log('Saved',data);
-      console.log(meals);
-      console.log(meals.breakfast[0].date);
-   
 
     } catch (error){
       console.log(error);
+      console.log(meals);
+      console.log(token);
     }
   };
 
@@ -185,7 +196,7 @@ const AddMeal = () => {
                                         updateFood(
                                             mealType,
                                             index,
-                                            'quantity',
+                                            'calories',
                                             e.detail.value ?? ''
                                         )
                                     }

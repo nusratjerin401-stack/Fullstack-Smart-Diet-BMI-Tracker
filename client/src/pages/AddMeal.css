@@ -1,0 +1,94 @@
+/* Add Meal Page*/
+ion-content {
+    background: #f4f8f5;
+}
+
+/*Page title*/
+.form-header{
+
+text-align:center;
+color: #2e7d32;
+font-size: 2rem;
+font-weight: bold;
+margin: 25px 0;
+}
+/* Accordion*/
+ion-accordion-group {
+    max-width: 88px;
+    margin: 0 auto;
+}
+
+/*Breakfast, Lunch, Dinner, Snack header*/
+ion-accordion {
+    margin-bottom: 12px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Accordion header */
+ion-accordion ion-item {
+    --background: #e8f5e9;
+    --color: #2e7d32;
+    font-weight: bold;
+}
+
+/* Content inside accordion */
+.meal-content {
+    padding: 15px;
+    background: white;
+  
+}
+
+/* Each food entry */
+.food-card {
+
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #f9fcf9;
+    border: 1px solid #d8ead9;
+    border-radius: 12px;
+}
+
+/* Input fields */
+.food-card ion-item {
+    --background: white;
+    --border-color: #d8ead9;
+    margin-bottom: 8px;
+    border-radius: 8px;
+}
+
+/* Add another food button */
+.add-Food-Button {
+    --color: #2e7d32;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* Save Meals button */
+ion-content > ion-button {
+    max-width: 800px;
+    margin: 25px auto;
+    display: block;
+    height: 50px;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+/* Input labels */
+ion-input {
+    --padding-start: 10px;
+    --padding-end: 10px;
+}
+
+/* Desktop spacing */
+@media (min-width: 768px) {
+    .meal-content {
+     padding: 20px;
+  }
+
+  .food-card {
+    padding: 20px;
+  }
+}

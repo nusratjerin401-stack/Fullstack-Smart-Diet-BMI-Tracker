@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -13,55 +11,67 @@ datasource db {
 }
 
 model User {
-  uuid      String   @id @default(uuid())
-  username  String   @unique
-  firstName String   @map("first_name")
-  lastName  String   @map("last_name")
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
 
-  meals     Meal[]
-  info      UserInfo?
+  info  UserInfo?
+  meals Meal[]
 
-  @@map("user")
+  @@map("users")
 }
 
+// One-to-one with User, populated by Intake.tsx (POST /survey)
 model UserInfo {
-  uuid              String @id
+  userId            String @id @map("user_id")
   age               Int
-  height            Float
-  weight            Float
   sex               String
-  bmi               Float
-  activityFrequency String @map("activity_frequency")
+  heightFeet        Int    @map("height_feet")
+  heightInches      Int    @map("height_inches")
+  weight            Float
   activityType      String @map("activity_type")
+  activityFrequency String @map("activity_frequency")
   fitnessGoal       String @map("fitness_goal")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
-  user User @relation(fields: [uuid], references: [uuid], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_info")
 }
 
-model Meal {
-  mealId    String   @id @default(uuid()) @map("meal_id")
-  uuid      String
-  timestamp DateTime @default(now())
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
 
-  user  User       @relation(fields: [uuid], references: [uuid], onDelete: Cascade)
+model Meal {
+  id       String   @id @default(uuid())
+  userId   String   @map("user_id")
+  mealType MealType @map("meal_type")
+  date     DateTime @default(now())
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items MealItem[]
 
   @@map("meals")
 }
 
 model MealItem {
-  id         Int    @id @default(autoincrement())
-  mealId     String @map("meal_id")
-  protein    Float
-  carbs      Float
-  sugar      Float
-  fat        Float
-  energyKcal Float  @map("energy_kcal")
-  portion    String
+  id       String @id @default(uuid())
+  mealId   String @map("meal_id")
+  foodName String @map("food_name")
+  portion  String
+  calories Float
+  protein  Float
+  carbs    Float
+  fat      Float
+  date     DateTime @default(now())
 
-  meal Meal @relation(fields: [mealId], references: [mealId], onDelete: Cascade)
+  meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
 
   @@map("meal_items")
 }

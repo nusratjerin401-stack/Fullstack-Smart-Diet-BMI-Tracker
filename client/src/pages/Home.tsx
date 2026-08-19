@@ -50,6 +50,7 @@ const Home: React.FC = () => {
             </IonText>
             /*Nutrition Summary */
               <div className="nutrition-summary">
+              </div>
 
               <div className="nutrition-item">
                 <h3>1,250</h3>
@@ -66,19 +67,37 @@ const Home: React.FC = () => {
                   <p>Carbs</p>
                 </div>
 
-            <IonButton expand="block" color="success" onClick={() => history.push('/intake')}>
+
+                 {/* Start Assessment */}
+            <IonButton
+              expand="block"
+              color="success"
+              onClick={() => history.push('/intake')}
+            >
               Start Assessment
             </IonButton>
 
-            <IonButton expand="block" color="success" onClick={() => history.push('/day-meals')}>
-              My Day Meals
+            {/* Health Dashboard */}
+            <IonButton
+              expand="block"
+              color="success"
+              fill="outline"
+              onClick={() => history.push('/dashboard')}
+            >
+              My Health Dashboard
             </IonButton>
-	    </div>
+
+            <IonButton expand="block" color="success" onClick={() => history.push('/dashboard')}>
+              Dashboard
+            </IonButton>
+
           </IonCardContent>
         </IonCard>
       </IonContent>
     </IonPage>
   );
-};
+  };
+
 
 export default Home;
+            

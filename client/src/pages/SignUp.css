@@ -1,0 +1,41 @@
+ion-content {
+  --background: #f4f8f5;
+}
+
+.signup-container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.signup-heading {
+  text-align: center;
+  color: #2e7d32;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 25px;
+}
+
+.signup-card {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.signup-card ion-item {
+  --background: white;
+  margin-bottom: 12px;
+}
+
+.signup-button {
+  margin-top: 25px;
+  height: 50px;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.login-redirect {
+  margin-top: 10px;
+  font-size: 14px;
+}

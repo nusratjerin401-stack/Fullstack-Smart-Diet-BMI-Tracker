@@ -71,6 +71,12 @@ intakeRouter.post("/survey", passport.authenticate("jwt", { session: false }), a
         error: "uuid is required",
       });
     }
+
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found",
+      });
+
     const existingInfo = await prisma.userInfo.findUnique({
       where: {
         userId: user.id
@@ -134,6 +140,38 @@ intakeRouter.get("/survey", passport.authenticate("jwt", { session: false }), as
     }
   }
 );
+
+    const intake = await prisma.userInfo.create({
+      data: {
+        userId: user.id,
+        age: Number(age),
+        heightFeet: Number(feet),
+        heightInches: Number(inches),
+        weight: Number(weight),
+        sex: sex,
+        bmi: ((Number(feet)*12 + Number(inches))/Number(weight))^2,
+        activityFrequency: afreq,
+        activityType: atype,
+        fitnessGoal: goal,
+      },
+    });
+
+// GET CURRENT USER'S INTAKE
+router.get("/survey",passport.authenticate("jwt", { session: false }),async (req, res) => {
+    try {
+      const user = req.user;
+
+      if (!user) {
+        return res.status(401).json({
+          error: "Unauthorized",
+        });
+      }
+
+      const intake = await prisma.userInfo.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
 
 // GET ALL INTAKE
 intakeRouter.get("/intake", async (req, res) => {
