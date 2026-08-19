@@ -6,11 +6,20 @@ import express from "express";
 import passport from "passport";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../../generated/prisma/client.js";
-
 import jwt from "jsonwebtoken";
-import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+
+
+const intakeRouter = express.Router();
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
+
+const prisma = new PrismaClient({ adapter });
+
+const asyncHandler = (fn) => (req, res, next) => fn(req, res, next).catch(next);
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET){
@@ -27,22 +36,12 @@ passport.use(
       console.log("PAYLOAD:", payload);
 
       const user = await prisma.user.findUnique({ where: { id: payload.sub } });
-      return done(null, user ?? false);
       console.log("USER:", user);
+      return done(null, user ?? false);
+      
     }
   )
 );
-
-
-const intakeRouter = express.Router();
-
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-});
-
-const prisma = new PrismaClient({ adapter });
-
-const asyncHandler = (fn) => (req, res, next) => fn(req, res, next).catch(next);
 
 // CREATE INTAKE, /intake
 intakeRouter.post("/survey", passport.authenticate("jwt", { session: false }), async (req, res) => {
@@ -53,7 +52,6 @@ intakeRouter.post("/survey", passport.authenticate("jwt", { session: false }), a
       inches,
       weight,
       sex,
-      bmi,
       atype,
       afreq,
       goal,
@@ -61,6 +59,13 @@ intakeRouter.post("/survey", passport.authenticate("jwt", { session: false }), a
 
     //const user = await prisma.user.findUnique({ where: { id: payload.sub } });
     const user = req.user;
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found",
+      });
+    }
+
+
     if (!user.id) {
       return res.status(400).json({
         error: "uuid is required",
@@ -78,9 +83,60 @@ intakeRouter.post("/survey", passport.authenticate("jwt", { session: false }), a
       },
     });
 
-      res.status(500).json({
-        error: "Failed to create intake",
+    if (existingInfo) {
+  return res.status(409).json({
+    error: "Intake information already exists",
+  });
+}
+  
+const totalInches = Number(feet) * 12 + Number(inches);
+  const bmi = (Number(weight) / (totalInches * totalInches)) * 703;
+  const intake = await prisma.userInfo.create({
+      data: {
+        userId: user.id,
+        age: Number(age),
+        heightFeet: Number(feet),
+        heightInches: Number(inches),
+        weight: Number(weight),
+        sex: sex,
+        bmi: bmi,
+        activityFrequency: afreq,
+        activityType: atype,
+        fitnessGoal: goal,
+      },
+    });
+    return res.status(201).json(intake);
+    } catch (error) {
+  console.error(error);
+
+  return res.status(500).json({
+    error: "Failed to create intake",
+  });
+}
+});
+  
+
+// GET CURRENT USER'S INTAKE
+intakeRouter.get("/survey", passport.authenticate("jwt", { session: false }), async (req, res) => {
+    try {
+      const user = req.user;
+
+      if (!user) {
+        return res.status(401).json({
+          error: "Unauthorized",
+        });
+      }
+
+      const intake = await prisma.userInfo.findUnique({
+        where: {
+          userId: user.id,
+        },
       });
+
+      return res.status(200).json(intake);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Failed to get intake information" });
     }
   }
 );
@@ -132,70 +188,20 @@ intakeRouter.get("/intake", async (req, res) => {
     }
   }
 );
-
-
-// GET ONE USER'S INTAKE
-intakeRouter.get("/intake/:uuid", async (req, res) => {
-  try {
-    const { uuid } = req.params;
-
-      if (!user) {
-        return res.status(401).json({
-          error: "Unauthorized",
-        });
-      }
-
-      const {
-        age,
-        sex,
-        heightFeet,
-        heightInches,
-        weight,
-        activityType,
-        activityFrequency,
-        fitnessGoal,
-      } = req.body;
-
-      const existingInfo = await prisma.userInfo.findUnique({
-        where: {
-          userId: user.id,
-        },
-      });
-
-      if (!existingInfo) {
-        return res.status(404).json({
-          error: "Intake information not found",
-        });
-      }
-
-      const intake = await prisma.userInfo.update({
-        where: {
-          userId: user.id,
-        },
-        data: {
-          age: Number(age),
-          sex,
-          heightFeet: Number(heightFeet),
-          heightInches: Number(heightInches),
-          weight: Number(weight),
-          activityType,
-          activityFrequency,
-          fitnessGoal,
-        },
-      });
-
-      res.status(200).json(intake);
-    } catch (error) {
-      console.error(error);
-
 // UPDATE INTAKE
-intakeRouter.put("/intake/:uuid", async (req, res) => {
+intakeRouter.put( "/survey",passport.authenticate("jwt", { session: false }),async (req, res) => {
   try {
-    const { uuid } = req.params;
+    const user = req.user;
 
+if (!user) {
+  return res.status(401).json({
+    error: "Unauthorized",
+  });
+}
     const {
       age,
-      height,
+      feet,
+      inches,
       weight,
       sex,
       bmi,
@@ -206,7 +212,7 @@ intakeRouter.put("/intake/:uuid", async (req, res) => {
 
     const existingInfo = await prisma.userInfo.findUnique({
       where: {
-        uuid,
+        userId: user.id,
       },
     });
 
@@ -215,12 +221,36 @@ intakeRouter.put("/intake/:uuid", async (req, res) => {
         error: "Intake information not found",
       });
     }
+    const intake = await prisma.userInfo.update({
+  where: {
+    userId: user.id,
+  },
+  data: {
+    age: Number(age),
+    heightFeet: Number(feet),
+    heightInches: Number(inches),
+    weight: Number(weight),
+    sex,
+    activityFrequency,
+    activityType,
+    fitnessGoal,
+  },
+});
+
+return res.status(200).json(intake);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to update intake information" });
+  }
   }
 );
 
 
 // DELETE CURRENT USER'S INTAKE
-router.delete("/survey",passport.authenticate("jwt", { session: false }),async (req, res) => {
+intakeRouter.delete(
+  "/survey",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
     try {
       const user = req.user;
 
@@ -236,10 +266,11 @@ router.delete("/survey",passport.authenticate("jwt", { session: false }),async (
         },
       });
 
-// DELETE INTAKE
-intakeRouter.delete("/intake/:uuid", async (req, res) => {
-  try {
-    const { uuid } = req.params;
+      if (!existingInfo) {
+        return res.status(404).json({
+          error: "Intake information not found",
+        });
+      }
 
       await prisma.userInfo.delete({
         where: {
@@ -247,13 +278,14 @@ intakeRouter.delete("/intake/:uuid", async (req, res) => {
         },
       });
 
-      res.status(200).json({
+      return res.status(200).json({
         message: "Intake information deleted successfully",
       });
+
     } catch (error) {
       console.error(error);
 
-      res.status(500).json({
+      return res.status(500).json({
         error: "Failed to delete intake information",
       });
     }

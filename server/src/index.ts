@@ -18,7 +18,7 @@ const PORT = 3000;
 // JSON middleware MUST come before routes
 app.use(passport.initialize());
 app.use(cors({
-  origin: "http://localhost:8100",
+  origin: "http://localhost:5173",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
