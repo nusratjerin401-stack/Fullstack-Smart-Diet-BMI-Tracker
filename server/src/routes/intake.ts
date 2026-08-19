@@ -22,7 +22,7 @@ const prisma = new PrismaClient({ adapter });
 const asyncHandler = (fn) => (req, res, next) => fn(req, res, next).catch(next);
 
 const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET){
+if (!JWT_SECRET) {
   throw new Error("JWT SECRET not set. copy to .env first");
 }
 passport.use(
@@ -38,7 +38,7 @@ passport.use(
       const user = await prisma.user.findUnique({ where: { id: payload.sub } });
       console.log("USER:", user);
       return done(null, user ?? false);
-      
+
     }
   )
 );
@@ -77,127 +77,136 @@ intakeRouter.post("/survey", passport.authenticate("jwt", { session: false }), a
         error: "User not found",
       });
 
-    const existingInfo = await prisma.userInfo.findUnique({
-      where: {
-        userId: user.id
-      },
-    });
+      const existingInfo = await prisma.userInfo.findUnique({
+        where: {
+          userId: user.id
+        },
+      });
 
-    if (existingInfo) {
-  return res.status(409).json({
-    error: "Intake information already exists",
-  });
-}
-  
-const totalInches = Number(feet) * 12 + Number(inches);
-  const bmi = (Number(weight) / (totalInches * totalInches)) * 703;
-  const intake = await prisma.userInfo.create({
-      data: {
-        userId: user.id,
-        age: Number(age),
-        heightFeet: Number(feet),
-        heightInches: Number(inches),
-        weight: Number(weight),
-        sex: sex,
-        bmi: bmi,
-        activityFrequency: afreq,
-        activityType: atype,
-        fitnessGoal: goal,
-      },
-    });
-    return res.status(201).json(intake);
-    } catch (error) {
-  console.error(error);
+      if (existingInfo) {
+        return res.status(409).json({
+          error: "Intake information already exists",
+        });
+      }
 
-  return res.status(500).json({
-    error: "Failed to create intake",
-  });
-}
+      const totalInches = Number(feet) * 12 + Number(inches);
+      const bmi = (Number(weight) / (totalInches * totalInches)) * 703;
+      const intake = await prisma.userInfo.create({
+        data: {
+          userId: user.id,
+          age: Number(age),
+          heightFeet: Number(feet),
+          heightInches: Number(inches),
+          weight: Number(weight),
+          sex: sex,
+          bmi: bmi,
+          activityFrequency: afreq,
+          activityType: atype,
+          fitnessGoal: goal,
+        },
+      });
+      return res.status(201).json(intake);
+    }
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      error: "Failed to create intake",
+    });
+  }
 });
-  
+
 
 // GET CURRENT USER'S INTAKE
 intakeRouter.get("/survey", passport.authenticate("jwt", { session: false }), async (req, res) => {
-    try {
-      const user = req.user;
+  try {
+    const user = req.user;
 
-      if (!user) {
-        return res.status(401).json({
-          error: "Unauthorized",
-        });
-      }
-
-      const intake = await prisma.userInfo.findUnique({
-        where: {
-          userId: user.id,
-        },
+    if (!user) {
+      return res.status(401).json({
+        error: "Unauthorized",
       });
-
-      return res.status(200).json(intake);
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ error: "Failed to get intake information" });
     }
-  }
-);
 
-    const intake = await prisma.userInfo.create({
-      data: {
+    const intake = await prisma.userInfo.findUnique({
+      where: {
         userId: user.id,
-        age: Number(age),
-        heightFeet: Number(feet),
-        heightInches: Number(inches),
-        weight: Number(weight),
-        sex: sex,
-        bmi: ((Number(feet)*12 + Number(inches))/Number(weight))^2,
-        activityFrequency: afreq,
-        activityType: atype,
-        fitnessGoal: goal,
       },
     });
 
+    return res.status(200).json(intake);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to get intake information" });
+  }
+}
+);
+
+/*
+const intake = await prisma.userInfo.create({
+  data: {
+    userId: user.id,
+    age: Number(age),
+    heightFeet: Number(feet),
+    heightInches: Number(inches),
+    weight: Number(weight),
+    sex: sex,
+    bmi: ((Number(feet) * 12 + Number(inches)) / Number(weight)) ^ 2,
+    activityFrequency: afreq,
+    activityType: atype,
+    fitnessGoal: goal,
+  },
+});
+*/
+
 // GET CURRENT USER'S INTAKE
-router.get("/survey",passport.authenticate("jwt", { session: false }),async (req, res) => {
+intakeRouter.get("/survey",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
     try {
-      const user = req.user;
+    const user = req.user;
 
-      if (!user) {
-        return res.status(401).json({
-          error: "Unauthorized",
-        });
-      }
-
-      const intake = await prisma.userInfo.findUnique({
-        where: {
-          userId: user.id,
-        },
+    if (!user) {
+      return res.status(401).json({
+        error: "Unauthorized",
       });
+    }
+
+    const intake = await prisma.userInfo.findUnique({
+      where: {
+        userId: user.id,
+      }
+    });
+  }catch{
+    // TODO: catch error
+  }
+});
 
 // GET ALL INTAKE
 intakeRouter.get("/intake", async (req, res) => {
   try {
     const intake = await prisma.userInfo.findMany();
 
-      res.status(200).json(intake);
-    } catch (error) {
-      console.error(error);
+    res.status(200).json(intake);
+  } catch (error) {
+    console.error(error);
 
-      res.status(500).json({
-        error: "Failed to get intake information",
-      });
-    }
+    res.status(500).json({
+      error: "Failed to get intake information",
+    });
   }
+}
 );
 // UPDATE INTAKE
-intakeRouter.put( "/survey",passport.authenticate("jwt", { session: false }),async (req, res) => {
+intakeRouter.put("/survey", passport.authenticate("jwt", { session: false }), async (req, res) => {
   try {
     const user = req.user;
 
-if (!user) {
-  return res.status(401).json({
-    error: "Unauthorized",
-  });
-}
+    if (!user) {
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
+    }
     const {
       age,
       feet,
@@ -222,27 +231,27 @@ if (!user) {
       });
     }
     const intake = await prisma.userInfo.update({
-  where: {
-    userId: user.id,
-  },
-  data: {
-    age: Number(age),
-    heightFeet: Number(feet),
-    heightInches: Number(inches),
-    weight: Number(weight),
-    sex,
-    activityFrequency,
-    activityType,
-    fitnessGoal,
-  },
-});
+      where: {
+        userId: user.id,
+      },
+      data: {
+        age: Number(age),
+        heightFeet: Number(feet),
+        heightInches: Number(inches),
+        weight: Number(weight),
+        sex,
+        activityFrequency,
+        activityType,
+        fitnessGoal,
+      },
+    });
 
-return res.status(200).json(intake);
+    return res.status(200).json(intake);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Failed to update intake information" });
   }
-  }
+}
 );
 
 
